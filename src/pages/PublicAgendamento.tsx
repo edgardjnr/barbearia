@@ -199,6 +199,7 @@ const PublicAgendamento = () => {
         const matchingOrg = orgData && orgData.length > 0 ? orgData[0] : null;
 
         if (matchingOrg) {
+          console.log('✅ Organization found:', matchingOrg);
           setOrganization(matchingOrg);
           
           // Buscar serviços usando função RPC segura
@@ -231,9 +232,11 @@ const PublicAgendamento = () => {
           const { data: memberServicesData } = await supabase
             .rpc('get_public_member_services', { org_id: matchingOrg.id });
           setMemberServices(memberServicesData || []);
+        } else {
+          console.error('❌ Organization not found for slug:', slug);
         }
       } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        console.error('❌ Error loading organization data:', error);
       } finally {
         setLoading(false);
       }
@@ -884,6 +887,8 @@ const PublicAgendamento = () => {
             <h1 className="text-xl font-bold mb-2">Empresa não encontrada</h1>
             <p className="text-muted-foreground">
               A empresa que você está procurando não foi encontrada.
+              <br />
+              <span className="text-xs mt-2 block">Slug: {slug}</span>
             </p>
           </CardContent>
         </Card>
