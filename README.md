@@ -1,59 +1,90 @@
-# Bem-vindo ao seu projeto BarberTech
+# BarberTech - Sistema de Gestão para Barbearias e Salões
 
-**Use sua IDE preferida**
+Bem-vindo ao **BarberTech**, uma plataforma completa e moderna para gestão de barbearias, salões de beleza e clínicas de estética. Este sistema foi desenvolvido para simplificar o dia a dia do seu negócio, desde o agendamento até a fidelização de clientes.
 
-Se você quiser trabalhar localmente usando sua própria IDE, você pode clonar este repositório e enviar as alterações. As alterações enviadas também serão refletidas no Lovable.
+## 🚀 Funcionalidades Principais
 
-O único requisito é ter o Node.js e npm instalados - [instale com nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+O BarberTech oferece um conjunto robusto de ferramentas para impulsionar seu negócio:
 
-Siga estes passos:
+*   **📅 Agendamento Online (Página Pública)**
+    *   Link exclusivo para seus clientes agendarem horários sozinhos.
+    *   Interface intuitiva e responsiva (funciona no celular).
+    *   Seleção de serviços, profissionais e horários disponíveis em tempo real.
 
-```sh
-# Passo 1: Clone o repositório usando a URL Git do projeto.
-git clone <SUA_URL_GIT>
+*   **✂️ Gestão de Agenda**
+    *   Visualização clara dos agendamentos diários, semanais e mensais.
+    *   Controle de status (confirmado, pendente, cancelado, concluído).
+    *   Bloqueio de horários e gestão de intervalos.
 
-# Passo 2: Navegue até o diretório do projeto.
-cd <NOME_DO_SEU_PROJETO>
+*   **👥 Gestão de Clientes (CRM)**
+    *   Cadastro completo de clientes com histórico de agendamentos.
+    *   Informações de contato e preferências.
 
-# Passo 3: Instale as dependências necessárias.
-npm i
+*   **💎 Programa de Fidelidade**
+    *   Sistema de pontuação automático para recompensar clientes recorrentes.
+    *   Configuração personalizada de regras de pontuação e resgate.
 
-# Passo 4: Inicie o servidor de desenvolvimento com recarregamento automático e visualização instantânea.
-npm run dev
-```
+*   **📊 Relatórios e Dashboards**
+    *   Visão geral do desempenho do negócio.
+    *   Relatórios financeiros e operacionais.
+    *   Métricas de crescimento e retenção.
 
-**Edite um arquivo diretamente no GitHub**
+*   **🛠️ Gestão de Serviços e Profissionais**
+    *   Cadastro de serviços com preços e durações.
+    *   Gestão de equipe com horários de trabalho individuais.
+    *   Comissionamento e controle de produtividade.
 
-- Navegue até o(s) arquivo(s) desejado(s).
-- Clique no botão "Edit" (ícone de lápis) no canto superior direito da visualização do arquivo.
-- Faça suas alterações e commite as mudanças.
+*   **⭐ Avaliações de Clientes**
+    *   Coleta de feedback após os atendimentos.
+    *   Monitoramento da satisfação dos clientes.
 
-**Use GitHub Codespaces**
+*   **📱 Configurações e Integrações**
+    *   Personalização do perfil da empresa.
+    *   Configuração de notificações.
+    *   Integração com WhatsApp para lembretes (configurável).
 
-- Navegue até a página principal do seu repositório.
-- Clique no botão "Code" (botão verde) próximo ao canto superior direito.
-- Selecione a aba "Codespaces".
-- Clique em "New codespace" para iniciar um novo ambiente Codespace.
-- Edite os arquivos diretamente dentro do Codespace e commite e envie suas alterações quando terminar.
+## 💻 Tecnologias Utilizadas
 
-## Quais tecnologias são usadas neste projeto?
+Este projeto foi construído com as tecnologias mais modernas do mercado para garantir performance e escalabilidade:
 
-Este projeto é construído com:
+*   **Frontend**: [Vite](https://vitejs.dev/), [React](https://react.dev/), [TypeScript](https://www.typescriptlang.org/)
+*   **Estilização**: [Tailwind CSS](https://tailwindcss.com/), [shadcn/ui](https://ui.shadcn.com/)
+*   **Backend / Banco de Dados**: [Supabase](https://supabase.com/)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🛠️ Como Rodar Localmente
 
-## Como posso implantar este projeto?
+Siga os passos abaixo para executar o projeto em sua máquina:
 
-Simplesmente abra o [Lovable](https://lovable.dev/projects/3b49c750-0e1d-401c-8e7f-2646cbf4a4be) e clique em Share -> Publish.
+### Pré-requisitos
+*   [Node.js](https://nodejs.org/) & npm instalados.
 
-## Posso conectar um domínio personalizado ao meu projeto Lovable?
+### Instalação
 
-Sim, você pode!
+1.  **Clone o repositório:**
+    ```bash
+    git clone <SUA_URL_GIT>
+    cd barber-tech-rp-main
+    ```
 
-Para conectar um domínio, navegue até Project > Settings > Domains e clique em Connect Domain.
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    ```
 
-Leia mais aqui: [Configurando um domínio personalizado](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+3.  **Configure as variáveis de ambiente:**
+    *   Certifique-se de ter o arquivo `.env` configurado com as chaves do Supabase (`VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY`).
+
+4.  **Inicie o servidor de desenvolvimento:**
+    ```bash
+    npm run dev
+    ```
+
+5.  **Acesse a aplicação:**
+    *   Abra seu navegador em `http://localhost:8080` (ou a porta indicada no terminal).
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests com melhorias e correções.
+
+---
+Desenvolvido com ❤️ para impulsionar o seu negócio.
