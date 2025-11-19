@@ -18,7 +18,7 @@ const Whatsapp = () => {
   const { organization, userProfile, updateOrganization } = useAuth();
   const { toast } = useToast();
   const isMobile = useIsMobile();
-  
+
   // Disparador states
   const [isConnecting, setIsConnecting] = useState(false);
   const [isPolling, setIsPolling] = useState(false);
@@ -48,7 +48,7 @@ const Whatsapp = () => {
       setFormData({
         whatsapp_instance_name: organization.whatsapp_instance_name || "",
         whatsapp_apikey: organization.whatsapp_apikey || "",
-        whatsapp_base_url: (organization as any).whatsapp_base_url || "https://api.onebots.com.br",
+        whatsapp_base_url: (organization as any).whatsapp_base_url || "https://waha.onebots.com.br",
       });
     }
   }, [organization]);
@@ -59,17 +59,17 @@ const Whatsapp = () => {
       if (organization?.whatsapp_instance_name && organization?.whatsapp_apikey) {
         const isConnected = await checkConnectionStatus();
         setIsWhatsAppConnected(isConnected);
-        
+
         if (!isConnected) {
           toast({
-            title: "WhatsApp Desconectado", 
+            title: "WhatsApp Desconectado",
             description: "Sua instância foi criada mas o WhatsApp não está conectado. Use o QR Code para conectar.",
             variant: "destructive",
           });
         }
       }
     };
-    
+
     checkInitialStatus();
   }, [organization]);
 
@@ -96,8 +96,8 @@ const Whatsapp = () => {
     setIsConnecting(true);
     try {
       const instanceName = normalizeInstanceName(organization.name);
-      
-      const response = await fetch(`https://api.onebots.com.br/instance/create`, {
+
+      const response = await fetch(`https://waha.onebots.com.br/instance/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ const Whatsapp = () => {
       }
 
       const data = await response.json();
-      
+
       const updateData = {
         whatsapp_instance_name: data.instance.instanceName,
         whatsapp_apikey: data.hash
@@ -200,7 +200,7 @@ const Whatsapp = () => {
     }
 
     setIsGeneratingQR(true);
-    
+
     toast({
       title: "Aguarde...",
       description: "Gerando QR Code para conexão do WhatsApp.",
@@ -244,7 +244,7 @@ const Whatsapp = () => {
       }
 
       const data = await qrResponse.json();
-      
+
       // Passo 4: Exibir o QR code (suporte a múltiplos formatos de resposta)
       try {
         let qrCodeDataUrl: string | null = null;
@@ -279,11 +279,11 @@ const Whatsapp = () => {
         setPairingCode(pairing);
         setShowQRCode(true);
         setCountdown(30);
-        
+
         if (countdownIntervalRef.current) {
           clearInterval(countdownIntervalRef.current);
         }
-        
+
         countdownIntervalRef.current = setInterval(() => {
           setCountdown(prev => {
             if (prev <= 1) {
@@ -292,12 +292,12 @@ const Whatsapp = () => {
             return prev - 1;
           });
         }, 1000);
-        
+
         if (startPolling && !isPolling) {
           setIsPolling(true);
           startQRPolling();
         }
-        
+
         toast({
           title: "QR Code gerado",
           description: "Escaneie o código para conectar seu WhatsApp.",
@@ -337,7 +337,7 @@ const Whatsapp = () => {
         stopPolling();
         return;
       }
-      
+
       generateQRCode(false);
       pollingIntervalRef.current = setTimeout(pollQRCode, 30000);
     };
@@ -354,17 +354,17 @@ const Whatsapp = () => {
 
   const stopPolling = () => {
     setIsPolling(false);
-    
+
     if (pollingIntervalRef.current) {
       clearTimeout(pollingIntervalRef.current);
       pollingIntervalRef.current = null;
     }
-    
+
     if (connectionCheckIntervalRef.current) {
       clearInterval(connectionCheckIntervalRef.current);
       connectionCheckIntervalRef.current = null;
     }
-    
+
     if (countdownIntervalRef.current) {
       clearInterval(countdownIntervalRef.current);
       countdownIntervalRef.current = null;
@@ -413,7 +413,7 @@ const Whatsapp = () => {
 
       // Se o nome da instância mudou, atualizar as mensagens existentes desta organização
       const instanceNameChanged = formData.whatsapp_instance_name !== organization?.whatsapp_instance_name;
-      
+
       if (instanceNameChanged && organization?.id) {
         // Atualizar apenas as mensagens desta organização com o novo nome da instância
         const { error: updateMessagesError } = await supabase
@@ -519,10 +519,10 @@ const Whatsapp = () => {
                   <li>• Mensagem após 15 dias de um serviço realizado (Follow-Up)</li>
                 </ul>
               </div>
-              
+
               <div className="flex items-center gap-2 pt-4">
                 {!organization?.whatsapp_instance_name ? (
-                  <Button 
+                  <Button
                     onClick={connectWhatsApp}
                     disabled={isConnecting || !organization}
                     variant="outline"
@@ -531,7 +531,7 @@ const Whatsapp = () => {
                     {isConnecting ? "Criando..." : "Criar Conexão"}
                   </Button>
                 ) : !isWhatsAppConnected ? (
-                  <Button 
+                  <Button
                     onClick={handleGenerateQRCode}
                     variant="default"
                     disabled={isGeneratingQR}
@@ -540,7 +540,7 @@ const Whatsapp = () => {
                     {isGeneratingQR ? "Gerando..." : "Gerar QR Code"}
                   </Button>
                 ) : (
-                  <Button 
+                  <Button
                     onClick={handleGenerateQRCode}
                     variant="outline"
                     disabled
@@ -582,13 +582,13 @@ const Whatsapp = () => {
                     </p>
                   </div>
                 )}
-                
+
                 {qrCodeImage && (
                   <div className="flex justify-center">
                     <div className="p-4 bg-white border-2 border-green-500 rounded-lg shadow-lg">
-                      <img 
-                        src={qrCodeImage} 
-                        alt="QR Code WhatsApp" 
+                      <img
+                        src={qrCodeImage}
+                        alt="QR Code WhatsApp"
                         className="w-64 h-64"
                       />
                     </div>
@@ -630,7 +630,7 @@ const Whatsapp = () => {
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  <strong>Atenção:</strong> Esta configuração afeta a integração com WhatsApp de toda a organização. 
+                  <strong>Atenção:</strong> Esta configuração afeta a integração com WhatsApp de toda a organização.
                   Certifique-se de inserir as credenciais corretas da API.
                 </AlertDescription>
               </Alert>
@@ -687,7 +687,7 @@ const Whatsapp = () => {
                         type="url"
                         value={formData.whatsapp_base_url}
                         onChange={handleInputChange}
-                        placeholder="https://api.onebots.com.br"
+                        placeholder="https://waha.onebots.com.br"
                         className="w-full"
                       />
                       <p className="text-sm text-muted-foreground">
@@ -696,8 +696,8 @@ const Whatsapp = () => {
                     </div>
 
                     <div className="pt-4">
-                      <Button 
-                        type="submit" 
+                      <Button
+                        type="submit"
                         disabled={isLoading}
                         className="w-full sm:w-auto"
                       >
@@ -721,7 +721,7 @@ const Whatsapp = () => {
                       Informações de Integração
                     </h3>
                     <div className="text-sm text-muted-foreground space-y-1">
-                      <p>• URL Base da API: <code className="text-xs bg-muted px-1 py-0.5 rounded">{formData.whatsapp_base_url || "https://api.onebots.com.br"}</code></p>
+                      <p>• URL Base da API: <code className="text-xs bg-muted px-1 py-0.5 rounded">{formData.whatsapp_base_url || "https://waha.onebots.com.br"}</code></p>
                       <p>• Webhook configurado automaticamente com base nos dados acima</p>
                       <p>• Certifique-se de que a instância está ativa na API WHATSAPP</p>
                     </div>

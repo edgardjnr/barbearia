@@ -496,7 +496,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
     }
 
     try {
-      const baseUrl = (organization as any).whatsapp_base_url || "https://api.onebots.com.br";
+      const baseUrl = (organization as any).whatsapp_base_url || "https://waha.onebots.com.br";
       const url = `${baseUrl}/api/sendText`;
       
       const response = await fetch(url, {
@@ -551,7 +551,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
     }
 
     try {
-      const baseUrl = (organization as any).whatsapp_base_url || "https://api.onebots.com.br";
+      const baseUrl = (organization as any).whatsapp_base_url || "https://waha.onebots.com.br";
       const url = `${baseUrl}/api/sendImage`;
       
       const payload = {
