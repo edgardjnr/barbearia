@@ -65,9 +65,9 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
 
   const formatTime = (dateString: string): string => {
     const date = new Date(dateString);
-    return date.toLocaleTimeString("pt-BR", { 
-      hour: "2-digit", 
-      minute: "2-digit" 
+    return date.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit"
     });
   };
 
@@ -83,6 +83,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
       const { data: messagesData, error: messagesError } = await supabase
         .from("Mensagens")
         .select("id, remoteJid, Nome, Mensagem, FromMe, created_at, Instancia, Mensagem_visualizada, Imagem, audio, organization_id")
+        .eq("organization_id", organization.id)
         .order("created_at", { ascending: false })
         .limit(5000);
 
@@ -161,8 +162,8 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
         lastMessage: lastMessage?.Mensagem ?
           lastMessage.Mensagem.replace(/\\n/g, '\n') :
           (lastMessage?.audio ? 'Áudio' :
-           lastMessage?.Imagem ? 'Imagem' :
-           'Chat iniciado'),
+            lastMessage?.Imagem ? 'Imagem' :
+              'Chat iniciado'),
         timestamp: lastMessage?.created_at || chat.created_at,
         unread: unreadCountMap.get(phone) || 0,
         phone: phone,
@@ -181,10 +182,10 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
     for (const [phone, lastMessage] of lastByPhone) {
       if (clientsMap.has(phone)) continue;
       const clientName = lastMessage.Nome && lastMessage.FromMe !== "true" ? lastMessage.Nome : phone;
-      
+
       // Incluir todos os chats, mas marcar o status correto
       const currentStatus = chatStatusCache.get(phone);
-      
+
       clientsMap.set(phone, {
         id: phone,
         name: clientName,
@@ -249,7 +250,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
 
     if (unreadMessages && unreadMessages.length > 0) {
       console.log(`Encontrou ${unreadMessages.length} mensagens para marcar como lidas`);
-      
+
       // Marcar todas essas mensagens como visualizadas
       const { error: updateError } = await supabase
         .from("Mensagens")
@@ -267,12 +268,12 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
     }
 
     // Atualizar imediatamente o estado dos clientes para zerar o contador
-    setClients(prev => prev.map(client => 
+    setClients(prev => prev.map(client =>
       client.phone === clientPhone ? { ...client, unread: 0 } : client
     ));
 
     // Atualizar o estado das mensagens localmente
-    setMessages(prev => prev.map(msg => 
+    setMessages(prev => prev.map(msg =>
       cleanPhoneNumber(msg.remoteJid) === clientPhone && msg.FromMe !== "true"
         ? { ...msg, Mensagem_visualizada: true }
         : msg
@@ -281,19 +282,19 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
 
   const getClientMessages = useMemo(() => {
     const clientMessagesCache = new Map<string, Message[]>();
-    
+
     return (clientPhone: string): Message[] => {
       if (clientMessagesCache.has(clientPhone)) {
         return clientMessagesCache.get(clientPhone)!;
       }
-      
+
       const clientMessages = messages
         .filter((msg) => cleanPhoneNumber(msg.remoteJid) === clientPhone)
         .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
         .map((msg) => {
           const hasAudio = msg.audio && msg.audio.trim() !== '';
           const hasImage = msg.Imagem && msg.Imagem.trim() !== '';
-          
+
           return {
             id: msg.id.toString(),
             content: msg.Mensagem ? msg.Mensagem.replace(/\\n/g, '\n') : "",
@@ -311,7 +312,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
             imageUrl: hasImage && !hasAudio ? msg.Imagem : undefined
           };
         });
-      
+
       clientMessagesCache.set(clientPhone, clientMessages);
       return clientMessages;
     };
@@ -333,7 +334,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
   // Real-time subscription for new messages and updates
   useEffect(() => {
     if (!organization?.id) return;
-    
+
     const channel = supabase
       .channel('mensagens-realtime')
       .on(
@@ -346,16 +347,16 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
         async (payload) => {
           console.log('Nova mensagem recebida:', payload);
           const newMessage = payload.new as WhatsappMessage;
-          
+
           // Qualquer nova mensagem deve garantir que o chat esteja aberto
           const clientPhone = cleanPhoneNumber(newMessage.remoteJid);
-          
+
           // Atualizar imediatamente o estado local para garantir que o chat apareça como aberto
           setChatStatusCache(prev => new Map(prev).set(clientPhone, 'open'));
-          setClients(prev => prev.map(client => 
+          setClients(prev => prev.map(client =>
             client.phone === clientPhone ? { ...client, chatStatus: 'open' } : client
           ));
-          
+
           try {
             // Verificar se o chat existe e seu status atual
             const { data: existingChat, error: fetchError } = await supabase
@@ -364,12 +365,12 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
               .eq("client_phone", clientPhone)
               .eq("organization_id", organization.id)
               .maybeSingle();
-            
+
             if (fetchError) {
               console.error('Erro ao buscar chat:', fetchError);
               return;
             }
-            
+
             if (!existingChat) {
               const { error: insertError } = await supabase
                 .from("chats")
@@ -379,7 +380,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
                   status: 'open',
                   closed_at: null
                 });
-              
+
               if (insertError) {
                 console.error('Erro ao criar chat:', insertError);
               } else {
@@ -388,13 +389,13 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
             } else if (existingChat.status === 'closed') {
               const { error: updateError } = await supabase
                 .from("chats")
-                .update({ 
-                  status: 'open', 
-                  closed_at: null, 
-                  updated_at: new Date().toISOString() 
+                .update({
+                  status: 'open',
+                  closed_at: null,
+                  updated_at: new Date().toISOString()
                 })
                 .eq("id", existingChat.id);
-              
+
               if (updateError) {
                 console.error('Erro ao reabrir chat:', updateError);
               } else {
@@ -404,7 +405,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
           } catch (error) {
             console.error('Erro ao gerenciar status do chat:', error);
           }
-          
+
           setMessages(prev => [...prev, newMessage]);
         }
       )
@@ -435,7 +436,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
 
   // Realtime de chats desativado (exibimos apenas Mensagens)
   useEffect(() => {
-    return () => {};
+    return () => { };
   }, []);
 
   const deleteMessage = async (messageId: number) => {
@@ -452,7 +453,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
 
       // Atualizar o estado local removendo a mensagem
       setMessages(prev => prev.filter(msg => msg.id !== messageId));
-      
+
       console.log(`Mensagem ${messageId} deletada com sucesso`);
       return true;
     } catch (error) {
@@ -474,13 +475,13 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
       }
 
       // Atualizar o estado local removendo todas as mensagens deste cliente
-      setMessages(prev => prev.filter(msg => 
+      setMessages(prev => prev.filter(msg =>
         !msg.remoteJid?.includes(clientPhone)
       ));
-      
+
       // Remover o cliente da lista
       setClients(prev => prev.filter(client => client.phone !== clientPhone));
-      
+
       console.log(`Todas as mensagens do cliente ${clientPhone} foram deletadas`);
       return true;
     } catch (error) {
@@ -498,7 +499,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
     try {
       const baseUrl = (organization as any).whatsapp_base_url || "https://waha.onebots.com.br";
       const url = `${baseUrl}/api/sendText`;
-      
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -519,7 +520,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
 
       const result = await response.json();
       console.log('Mensagem enviada com sucesso:', result);
-      
+
       // Salvar mensagem na tabela Mensagens
       const { error: dbError } = await supabase
         .from('Mensagens')
@@ -536,7 +537,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
       if (dbError) {
         console.error('Erro ao salvar mensagem no banco:', dbError);
       }
-      
+
       return { success: true, data: result };
     } catch (error) {
       console.error("Erro ao enviar mensagem:", error);
@@ -553,7 +554,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
     try {
       const baseUrl = (organization as any).whatsapp_base_url || "https://waha.onebots.com.br";
       const url = `${baseUrl}/api/sendImage`;
-      
+
       const payload = {
         session: organization.whatsapp_instance_name,
         chatId: `${clientPhone}@c.us`,
@@ -577,7 +578,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
         },
         caption: payload.caption
       });
-      
+
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -598,7 +599,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
 
       const result = await response.json();
       console.log('Imagem enviada com sucesso:', result);
-      
+
       // Salvar mensagem de imagem na tabela Mensagens
       const { error: dbError } = await supabase
         .from('Mensagens')
@@ -616,7 +617,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
       if (dbError) {
         console.error('Erro ao salvar imagem no banco:', dbError);
       }
-      
+
       return { success: true, data: result };
     } catch (error) {
       console.error("Erro ao enviar imagem:", error);
@@ -673,7 +674,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
 
       // Atualizar o estado local e cache
       setChatStatusCache(prev => new Map(prev).set(clientPhone, 'closed'));
-      setClients(prev => prev.map(client => 
+      setClients(prev => prev.map(client =>
         client.phone === clientPhone ? { ...client, chatStatus: 'closed' } : client
       ));
 
@@ -734,7 +735,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
 
       // Atualizar o estado local e cache
       setChatStatusCache(prev => new Map(prev).set(clientPhone, 'open'));
-      setClients(prev => prev.map(client => 
+      setClients(prev => prev.map(client =>
         client.phone === clientPhone ? { ...client, chatStatus: 'open' } : client
       ));
 
@@ -753,7 +754,7 @@ export const useWhatsappMessages = (sortOrder: "recent" | "oldest" = "recent") =
   // Filtrar clientes baseado no status
   const filteredClients = !chatStatusesReady
     ? []
-    : (showClosedChats 
+    : (showClosedChats
       ? clients.filter(client => client.chatStatus === 'closed')
       : clients.filter(client => client.chatStatus === 'open'));
 
